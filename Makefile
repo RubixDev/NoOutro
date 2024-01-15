@@ -15,7 +15,7 @@ else
 $(error "Python not found in PATH, please install it.")
 endif
 
-export TARGET	:=	dsidl
+export TARGET	:=	NoOutro
 export TOPDIR	:=	$(CURDIR)
 
 # specify a directory which contains the nitro filesystem
@@ -23,7 +23,7 @@ export TOPDIR	:=	$(CURDIR)
 NITRO_FILES	:=
 
 # These set the information text in the nds file
-GAME_CODE	:=	KDLA
+GAME_CODE	:=	KDLB
 GAME_BANNER	:=	banner.bin
 
 include $(DEVKITARM)/ds_rules
@@ -38,7 +38,7 @@ all: checkarm7 checkarm9 $(TARGET).dsi
 #---------------------------------------------------------------------------------
 checkarm7:
 	$(MAKE) -C arm7
-	
+
 #---------------------------------------------------------------------------------
 checkarm9:
 	$(MAKE) -C arm9
@@ -46,14 +46,14 @@ checkarm9:
 #---------------------------------------------------------------------------------
 $(TARGET).dsi	:	$(NITRO_FILES) arm7/$(TARGET).elf arm9/$(TARGET).elf
 	$(SILENTCMD)ndstool -c $@ -7 arm7/$(TARGET).elf -9 arm9/$(TARGET).elf $(_ADDFILES) \
-		-g $(GAME_CODE) 00 "DSIDL" -z 80040000 -u 00030004
-	$(SILENTCMD)$(PYTHON) animatedbannerpatch.py $@ $(GAME_BANNER)
+		-g $(GAME_CODE) 00 "NOOUTRO" -z 80040000 -u 00030004 \
+		-b icon.bmp "NoOutro;RubixDev"
 	@echo built ... $(notdir $@)
 
 #---------------------------------------------------------------------------------
 arm7/$(TARGET).elf:
 	$(MAKE) -C arm7
-	
+
 #---------------------------------------------------------------------------------
 arm9/$(TARGET).elf:
 	$(MAKE) -C arm9

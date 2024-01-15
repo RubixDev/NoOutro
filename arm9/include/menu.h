@@ -16,6 +16,9 @@ struct MenuItem {
 	std::function<void(Menu &)> callback;
 
 	MenuItem(std::string title, u16 hotkey, std::function<void(Menu &)> callback) : title(title), hotkey(hotkey), callback(callback) { }
+
+public:
+    std::string details = "";
 };
 
 class Menu {
@@ -29,11 +32,14 @@ class Menu {
 	void draw(bool clear);
 
 public:
+    PrintConsole *topConsole;
+    PrintConsole *bottomConsole;
+
 	static void print(const char *format, ...);
 	static void printDelay(int delay, const char *format, ...);
 	static u16 prompt(u16 keymask, const char *format, ...);
 
-	Menu(const std::string &title, std::function<void(Menu &)> vblank = nullptr) : _title(title), _vblank(vblank) { }
+	Menu(const std::string &title, PrintConsole *topConsole = nullptr, PrintConsole *bottomConsole = consoleGetDefault(), std::function<void(Menu &)> vblank = nullptr) : _title(title), _vblank(vblank), topConsole(topConsole), bottomConsole(bottomConsole) { }
 
 	Menu &addItem(const MenuItem &item);
 	Menu &clear(void);

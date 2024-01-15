@@ -16,21 +16,21 @@ jobs:
         run: sudo apt-get -y install python
       - name: Checkout repo
         uses: actions/checkout@v1
-      - name: Build dsidl
+      - name: Build NoOutro
         run: |
           make
 
           # Make CIA
           curl -LO https://github.com/ihaveamac/ctr_toolkit/releases/download/make_cia6.4builds/make_cia6.4builds.zip
           unzip -j make_cia6.4builds.zip linux/make_cia
-          ./make_cia --srl=dsidl.dsi
-      - name: Upload dsidl.dsi
+          ./make_cia --srl=NoOutro.dsi
+      - name: Upload NoOutro.dsi
         uses: AButler/upload-release-assets@v2.0
         with:
-          files: dsidl.dsi
+          files: NoOutro.dsi
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload dsild.cia
         uses: AButler/upload-release-assets@v2.0
         with:
-          files: dsidl.cia
+          files: NoOutro.cia
           repo-token: ${{ secrets.GITHUB_TOKEN }}

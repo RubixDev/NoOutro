@@ -1,0 +1,9 @@
+[submodule "lexbor"]
+	path = lexbor
+	url = https://github.com/lexbor/lexbor
+[submodule "zip"]
+	path = zip
+	url = https://github.com/kuba--/zip
+[submodule "unzipLIB"]
+	path = unzipLIB
+	url = https://github.com/bitbank2/unzipLIB

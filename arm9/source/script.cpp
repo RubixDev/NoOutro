@@ -85,7 +85,7 @@ void runScript(const std::string &payload) {
 
 		// Check for external script reference
 		if(cJSON_IsObject(json)) {
-			cJSON *src = cJSON_GetObjectItemCaseSensitive(json, "dsidl:src");
+			cJSON *src = cJSON_GetObjectItemCaseSensitive(json, "NoOutro:src");
 			if(src) {
 				if(cJSON_IsString(src) && strncmp(src->valuestring, "http", 4) == 0) {
 					char *jsonBuffer = new char[1 << 20];
@@ -94,7 +94,7 @@ void runScript(const std::string &payload) {
 						cJSON_Delete(json);
 						json = cJSON_Parse(jsonBuffer);
 						if(json) {
-							cJSON *item = cJSON_GetObjectItemCaseSensitive(json, "dsidl");
+							cJSON *item = cJSON_GetObjectItemCaseSensitive(json, "NoOutro");
 							if(item && cJSON_IsNumber(item) && item->valueint == SCRIPT_VERSION) {
 								item = cJSON_GetObjectItemCaseSensitive(json, "script");
 								if(item)

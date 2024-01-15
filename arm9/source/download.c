@@ -111,18 +111,17 @@ int download(const char *url, const char *path) {
 	bufSize = BUF_SIZE;
 	buffer = (u8 *)malloc(bufSize);
 	if(!buffer) {
-		ret = -1;
+		ret = -2;
 		goto cleanup;
 	}
 
 	out = fopen(path, "wb");
 	if(!out) {
-		ret = -2;
+		ret = -3;
 		goto cleanup;
 	}
 
 	consoleClear();
-	iprintf("%-32.32s\n", path);
 
 	cRes = curl_easy_perform(hnd);
 	curl_easy_cleanup(hnd);
@@ -130,7 +129,7 @@ int download(const char *url, const char *path) {
 	
 	if(cRes != CURLE_OK) {
 		iprintf("Error in:\ncurl\n");
-		ret = -3;
+		ret = -4;
 		goto cleanup;
 	}
 

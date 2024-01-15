@@ -49,6 +49,13 @@ void Menu::draw(bool clear) {
 		printf("%c %-30.30s", (_scrollPos + i) == _curPos ? '>' : ' ', _items[_scrollPos + i].title.c_str());
 	}
 
+    if (topConsole) {
+        consoleSelect(topConsole);
+        consoleClear();
+        printf("%s\n", _items[_curPos].details.c_str());
+        consoleSelect(bottomConsole);
+    }
+
 	if(_items.size() < (SCREEN_ROWS) - 2)
 		printf("================================");
 }
