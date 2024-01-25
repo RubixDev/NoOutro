@@ -1,0 +1,48 @@
+{
+  "lineWidth": 120,
+  "indentWidth": 4,
+  "useTabs": false,
+
+  "json": {
+    "indentWidth": 2,
+    "array.preferSingleLine": true
+  },
+
+  "markdown": {
+    "lineWidth": 80,
+    "textWrap": "always"
+  },
+
+  "prettier": {
+    "printWidth": 100,
+    "tabWidth": 4,
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "arrowParens": "avoid",
+    "proseWrap": "always",
+
+    "plugin.jsdoc": true,
+    "yml.tabWidth": 2,
+    "yaml.tabWidth": 2,
+    "json.tabWidth": 2,
+    "jsonc.tabWidth": 2,
+    "json5.tabWidth": 2
+  },
+
+  "exec": {
+    "commands": [{
+      "command": "clang-format",
+      "exts": ["cpp", "c", "h"]
+    }]
+  },
+
+  "includes": ["**/*"],
+  "excludes": ["**/build", "lexbor", "unzipLIB", "libs", "compile_commands.json", "arm9/include/version.h"],
+  "plugins": [
+    "https://plugins.dprint.dev/json-0.19.1.wasm",
+    "https://plugins.dprint.dev/markdown-0.16.3.wasm",
+    "https://plugins.dprint.dev/prettier-0.35.0.json@0df49c4d878bb1051af2fa1d1f69ba6400f4b78633f49baa1f38954a6fd32b40",
+    "https://plugins.dprint.dev/exec-0.4.4.json@c207bf9b9a4ee1f0ecb75c594f774924baf62e8e53a2ce9d873816a408cecbf7"
+  ]
+}

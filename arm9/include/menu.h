@@ -11,46 +11,57 @@
 class Menu;
 
 struct MenuItem {
-	std::string title;
-	u16 hotkey;
-	std::function<void(Menu &)> callback;
+    std::string title;
+    u16 hotkey;
+    std::function<void(Menu &)> callback;
 
-	MenuItem(std::string title, u16 hotkey, std::function<void(Menu &)> callback) : title(title), hotkey(hotkey), callback(callback) { }
+    MenuItem(std::string title, u16 hotkey, std::function<void(Menu &)> callback)
+        : title(title), hotkey(hotkey), callback(callback) {}
 
-public:
+  public:
     std::string details = "";
 };
 
 class Menu {
-	std::string _title, _result;
-	std::vector<MenuItem> _items;
-	int _curPos = 0, _scrollPos = 0;
-	bool _exit = false;
-	std::function<void(Menu &)> _vblank;
-	u16 _keymask = KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT | KEY_A;
+    std::string _title, _result;
+    std::vector<MenuItem> _items;
+    int _curPos = 0, _scrollPos = 0;
+    bool _exit = false;
+    std::function<void(Menu &)> _vblank;
+    u16 _keymask = KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT | KEY_A;
 
-	void draw(bool clear);
+    void draw(bool clear);
 
-public:
+  public:
     PrintConsole *topConsole;
     PrintConsole *bottomConsole;
 
-	static void print(const char *format, ...);
-	static void printDelay(int delay, const char *format, ...);
-	static u16 prompt(u16 keymask, const char *format, ...);
+    static void print(const char *format, ...);
+    static void printDelay(int delay, const char *format, ...);
+    static u16 prompt(u16 keymask, const char *format, ...);
 
-	Menu(const std::string &title, PrintConsole *topConsole = nullptr, PrintConsole *bottomConsole = consoleGetDefault(), std::function<void(Menu &)> vblank = nullptr) : _title(title), _vblank(vblank), topConsole(topConsole), bottomConsole(bottomConsole) { }
+    Menu(
+        const std::string &title,
+        PrintConsole *topConsole = nullptr,
+        PrintConsole *bottomConsole = consoleGetDefault(),
+        std::function<void(Menu &)> vblank = nullptr
+    )
+        : _title(title), _vblank(vblank), topConsole(topConsole), bottomConsole(bottomConsole) {}
 
-	Menu &addItem(const MenuItem &item);
-	Menu &clear(void);
-	Menu &exit(const std::string &result = "") { _exit = true; _result = result; return *this; }
+    Menu &addItem(const MenuItem &item);
+    Menu &clear(void);
+    Menu &exit(const std::string &result = "") {
+        _exit = true;
+        _result = result;
+        return *this;
+    }
 
-	int curPos(void) const { return _curPos; }
-	int scrollPos(void) const { return _scrollPos; }
-	const MenuItem &current(void) const { return _items[_curPos]; }
-	const std::string &result(void) const { return _result; }
+    int curPos(void) const { return _curPos; }
+    int scrollPos(void) const { return _scrollPos; }
+    const MenuItem &current(void) const { return _items[_curPos]; }
+    const std::string &result(void) const { return _result; }
 
-	void run(void);
+    void run(void);
 };
 
 #endif // MENU_H

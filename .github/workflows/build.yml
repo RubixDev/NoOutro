@@ -2,12 +2,12 @@ name: Build
 
 on:
   push:
-    branches: ["*"]
+    branches: ['*']
     paths-ignore:
       - README.md
       - resources
   pull_request:
-    branches: ["*"]
+    branches: ['*']
     paths-ignore:
       - README.md
       - resources
