@@ -279,7 +279,7 @@ int main(int argc, char **argv) {
     mainMenu.addItem(createSubMenu("TurboGrafx-16",                "tg16",    "tg16",    "NEC%20-%20PC%20Engine%20-%20TurboGrafx-16/", topConsole, bottomConsole));
     mainMenu.addItem(createSubMenu("TurboGrafx-16 (Private)",      "tg16_p",  "tg16",    "NEC%20-%20PC%20Engine%20-%20TurboGrafx-16%20%28Private%29/", topConsole, bottomConsole));
     mainMenu.addItem(createSubMenu("WonderSwan",                   "ws",      "ws",      "Bandai%20-%20WonderSwan/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("WonderSwan (Private)",         "ws_p",    "ws",      "Bandai%20-%20WonderSwan%20Color/", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("WonderSwan Color",             "wsc",     "ws",      "Bandai%20-%20WonderSwan%20Color/", topConsole, bottomConsole));
 
 	// mainMenu.addItem({"Update Index (Dev)           L", KEY_L, [](Menu &menu) {
  //        int ret = download(DEV_URL.c_str(), INDEX_FILE_PATH.c_str());
