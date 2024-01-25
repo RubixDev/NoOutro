@@ -53,7 +53,7 @@ LDFLAGS   = -specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS := -lcurl -lmbedtls -lmbedx509 -lmbedcrypto -lz -lfat -ldsiwifi9 -lnds9 -llexbor_static -lunzip
+LIBS := -lcurl -lmbedtls -lmbedx509 -lmbedcrypto -lz -lfat -ldsiwifi9 -lnds9 -llexbor -lunzip
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing

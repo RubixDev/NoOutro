@@ -55,8 +55,28 @@ arm7/$(TARGET).elf:
 	$(MAKE) -C arm7
 
 #---------------------------------------------------------------------------------
-arm9/$(TARGET).elf:
+arm9/$(TARGET).elf: ./libs/lib/liblexbor.a ./libs/lib/libunzip.a
 	$(MAKE) -C arm9
+
+./libs/lib/liblexbor.a: ./lexbor/LICENSE
+	mkdir -p ./lexbor/build
+	arm-none-eabi-cmake -S ./lexbor/ -B ./lexbor/build -DLEXBOR_BUILD_SHARED=OFF
+	make -C ./lexbor/build
+	cp ./lexbor/build/liblexbor_static.a ./libs/lib/liblexbor.a
+	rm -rf ./lexbor/build
+
+./libs/lib/libunzip.a: ./unzipLIB/LICENSE
+	mkdir -p ./unzipLIB/build
+	arm-none-eabi-g++ -DPICO_BUILD -c ./unzipLIB/src/unzipLIB.cpp -o ./unzipLIB/build/unzipLIB.o
+	arm-none-eabi-gcc -c ./unzipLIB/src/unzip.c -o ./unzipLIB/build/unzip.o
+	arm-none-eabi-ar rcs ./libs/lib/libunzip.a ./unzipLIB/build/unzip.o ./unzipLIB/build/unzipLIB.o
+	rm -rf ./unzipLIB/build
+
+./lexbor/LICENSE:
+	git submodule update lexbor
+
+./unzipLIB/LICENSE:
+	git submodule update unzipLIB
 
 #---------------------------------------------------------------------------------
 clean:

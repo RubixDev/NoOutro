@@ -9,3 +9,6 @@ arm9/include/version.h
 .vscode
 .cache
 compile_commands.json
+
+libs/lib/libunzip.a
+libs/lib/liblexbor.a
