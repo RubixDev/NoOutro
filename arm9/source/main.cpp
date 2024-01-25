@@ -15,7 +15,6 @@
 
 bool verbose = false;
 static const std::string BASE_URL = "https://myrient.erista.me/files/No-Intro/";
-// static const std::string DEV_URL = "http://192.168.0.173:8000/index.html";
 static const std::string DATA_DIR = "sd:/no-outro";
 static const std::string ZIP_FILE_PATH = DATA_DIR + "/rom.zip";
 static const std::string ROMS_DIR = "sd:/roms/";
@@ -232,13 +231,6 @@ int main(int argc, char **argv) {
     // make sure NoOutro folder exists
     mkdir(DATA_DIR.c_str(), 0777);
 
-	// if(argc > 1) {
-	// 	printf("Running scripts from argv...\n");
-	// 	for(int i = 1; i < argc; i++) {
-	// 		runScript(argv[i]);
-	// 	}
-	// }
-
 	consoleClear();
 
 	Menu mainMenu("NoOutro " VER_NUMBER);
@@ -281,14 +273,6 @@ int main(int argc, char **argv) {
     mainMenu.addItem(createSubMenu("WonderSwan",                   "ws",      "ws",      "Bandai%20-%20WonderSwan/", topConsole, bottomConsole));
     mainMenu.addItem(createSubMenu("WonderSwan Color",             "wsc",     "ws",      "Bandai%20-%20WonderSwan%20Color/", topConsole, bottomConsole));
 
-	// mainMenu.addItem({"Update Index (Dev)           L", KEY_L, [](Menu &menu) {
- //        int ret = download(DEV_URL.c_str(), INDEX_FILE_PATH.c_str());
- //        if (ret >= 0) {
- //            Menu::print("\nDownload Successful!\n");
- //        } else {
- //            Menu::print("\nDownload Failed\nCode: %d\n", ret);
- //        }
-	// }});
 	mainMenu.addItem({"Exit                     START", KEY_START, [](Menu &menu) {
 		menu.exit();
 	}});
