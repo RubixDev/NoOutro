@@ -1,5 +1,6 @@
 #include "download.h"
 #include "menu.h"
+#include "multibootstrap.h"
 #include "unzip.h"
 #include "version.h"
 #include "wifi.h"
@@ -53,22 +54,23 @@ MenuItem createSubMenu(
     std::string title,
     std::string ident,
     std::string dir,
-    std::string remote_dir,
+    std::string remoteDir,
     PrintConsole *topConsole,
-    PrintConsole *bottomConsole
+    PrintConsole *bottomConsole,
+    std::function<bool(std::string roms_path)> customExtract = nullptr
 ) {
     return {
         title,
         0,
-        [topConsole, bottomConsole, title, ident, dir, remote_dir](Menu &menu) {
+        [topConsole, bottomConsole, title, ident, dir, remoteDir, customExtract](Menu &menu) {
             const std::string html_path = DATA_DIR + "/" + ident + ".html";
             const std::string roms_path = ROMS_DIR + dir;
-            const std::string url = BASE_URL + remote_dir;
+            const std::string url = BASE_URL + remoteDir;
             Menu subMenu(title);
             subMenu.addItem(MenuItem {
                 "Browse Titles                X",
                 KEY_X,
-                [topConsole, bottomConsole, html_path, roms_path, url](Menu &menu) {
+                [topConsole, bottomConsole, html_path, roms_path, url, customExtract](Menu &menu) {
                     consoleClear();
                     Menu::print("Reading index file...\n");
                     const char *html_c = read_file(html_path.c_str());
@@ -186,20 +188,44 @@ MenuItem createSubMenu(
                             lxb_dom_collection_destroy(size_elem_collection, true);
                             lxb_dom_collection_destroy(a_elem_collection, true);
 
-                            MenuItem item(title, 0, [href, roms_path, url](Menu &menu) {
-                                u16 key = Menu::prompt(
-                                    KEY_A | KEY_B, "Download selected title?\n\n(<A> Yes, <B> No)\n"
-                                );
-                                if (key & KEY_A) {
-                                    int ret = download((url + href).c_str(), ZIP_FILE_PATH.c_str());
-                                    if (ret >= 0) {
-                                        Menu::printDelay(60, "\nDownload Successful!\n");
-                                        unzip_file(ZIP_FILE_PATH, roms_path);
-                                    } else {
-                                        Menu::printDelay(60, "\nDownload Failed\nCode: %d\n", ret);
+                            MenuItem item(
+                                title,
+                                0,
+                                [href, roms_path, url, customExtract](Menu &menu) {
+                                    u16 key = Menu::prompt(
+                                        KEY_A | KEY_B,
+                                        "Download selected title?\n\n(<A> Yes, <B> No)\n"
+                                    );
+                                    if (key & KEY_A) {
+                                        int ret =
+                                            download((url + href).c_str(), ZIP_FILE_PATH.c_str());
+                                        if (ret >= 0) {
+                                            Menu::print("\nDownload Successful!\n");
+                                            bool res =
+                                                customExtract
+                                                    ? customExtract(roms_path)
+                                                    : unzip_file(ZIP_FILE_PATH, roms_path) == 0;
+                                            if (!res) {
+                                                Menu::prompt(
+                                                    KEY_A | KEY_B,
+                                                    "\x1b[31mExtraction failed.\n\x1b[33mPress A "
+                                                    "or B to go back.\x1b[39m\n"
+                                                );
+                                            } else {
+                                                Menu::prompt(
+                                                    KEY_A | KEY_B,
+                                                    "\x1b[32mExtraction successful!\n\x1b[33mPress "
+                                                    "A or B to go back.\x1b[39m\n"
+                                                );
+                                            }
+                                        } else {
+                                            Menu::printDelay(
+                                                60, "\nDownload Failed\nCode: %d\n", ret
+                                            );
+                                        }
                                     }
                                 }
-                            });
+                            );
                             item.details = "Full Title:\n" + title + "\n\nDownload Size: " + size;
                             titleListMenu.addItem(item);
                         }
@@ -222,8 +248,7 @@ MenuItem createSubMenu(
                     // clang-format on
                     consoleClear();
                     titleListMenu.run();
-                }
-            });
+                }});
             // clang-format off
             subMenu.addItem({"Update Index                 R", KEY_R, [html_path, url](Menu &menu) {
                 int ret = download(url.c_str(), html_path.c_str());
@@ -240,8 +265,13 @@ MenuItem createSubMenu(
 
             consoleClear();
             subMenu.run();
-        }
-    };
+        }};
+}
+
+bool gbaMultibootExtract(std::string roms_path) {
+    return unzip_file(ZIP_FILE_PATH, roms_path, [](std::string file_path) {
+               return multibootstrap_patchFile(file_path.c_str());
+           }) == 0;
 }
 
 int main(int argc, char **argv) {
@@ -303,8 +333,7 @@ int main(int argc, char **argv) {
     mainMenu.addItem(createSubMenu("Game Boy Color",               "gbc",     "gb",      "Nintendo%20-%20Game%20Boy%20Color/", topConsole, bottomConsole));
     mainMenu.addItem(createSubMenu("Game Boy Color (Private)",     "gbc_p",   "gb",      "Nintendo%20-%20Game%20Boy%20Color%20%28Private%29/", topConsole, bottomConsole));
     mainMenu.addItem(createSubMenu("Game Boy Advance",             "gba",     "gba",     "Nintendo%20-%20Game%20Boy%20Advance/", topConsole, bottomConsole));
-    // TODO: maybe figure out gba multiboot. Might need rom patching with https://gbatemp.net/threads/multibootstrap-patch-multiboot-gba-roms-to-run-from-a-cartridge.613958/
-    // mainMenu.addItem(createSubMenu("Game Boy Advance (Multiboot)", "gba_m",   "gba",     "Nintendo%20-%20Game%20Boy%20Advance%20%28Multiboot%29/", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Game Boy Advance (Multiboot)", "gba_m",   "gba",     "Nintendo%20-%20Game%20Boy%20Advance%20%28Multiboot%29/", topConsole, bottomConsole, gbaMultibootExtract));
     mainMenu.addItem(createSubMenu("Game Boy Advance (Private)",   "gba_p",   "gba",     "Nintendo%20-%20Game%20Boy%20Advance%20%28Private%29/", topConsole, bottomConsole));
     mainMenu.addItem(createSubMenu("Game Boy Advance (Video)",     "gba_v",   "gba",     "Nintendo%20-%20Game%20Boy%20Advance%20%28Video%29/", topConsole, bottomConsole));
     mainMenu.addItem(createSubMenu("NeoGeo Pocket",                "ngp",     "ngp",     "SNK%20-%20NeoGeo%20Pocket/", topConsole, bottomConsole));

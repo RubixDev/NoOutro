@@ -45,3 +45,5 @@ A simple app to download a file from a URL in a QR code on the Nintendo DSi.
 - [GodMode9i](https://github.com/DS-Homebrew/GodMode9i): Base for several UI
   elements; keyboard, file browser, etc
 - [devkitPro](https://devkitpro.org): libnds, devkitARM, libfat
+- [multibootstrap](https://gbatemp.net/threads/multibootstrap-patch-multiboot-gba-roms-to-run-from-a-cartridge.613958/):
+  Patch GBA multiboot ROMs to run standalone.

@@ -1,4 +1,5 @@
 #include "unzip.h"
+#include <nds.h>
 
 UNZIP zip;
 
@@ -35,7 +36,12 @@ int32_t mySeek(void *p, int32_t position, int type) {
     return fseek((FILE *)pzf->fHandle, position, type);
 }
 
-int unzip_file(std::string zip_path, std::string output_dir) {
+int unzip_file(
+    std::string zip_path,
+    std::string output_dir,
+    std::function<bool(std::string path)> for_each_file
+) {
+    // TODO: mkdir -p output_dir
     int status;
     uLong bytes_read;
     uint8_t buf[1 << 19]; // 0.5 MiB
@@ -59,17 +65,19 @@ int unzip_file(std::string zip_path, std::string output_dir) {
                 zip.closeZIP();
                 return -1;
             }
+            consoleClear();
             printf("Extracting file: %s\n", fileName);
             bytes_read = 0;
             status = 1;
-            FILE *f = fopen((output_dir + "/" + std::string(fileName)).c_str(), "wb");
+            std::string filePath = output_dir + "/" + std::string(fileName);
+            FILE *f = fopen(filePath.c_str(), "wb");
             while (status > 0) {
                 status = zip.readCurrentFile(buf, sizeof(buf));
                 if (status >= 0) {
                     bytes_read += status;
-                    fwrite(buf, sizeof(buf), 1, f);
+                    fwrite(buf, status, 1, f);
 
-                    iprintf("\x1B[2;0H%ld/%ld bytes\n", bytes_read, fi.uncompressed_size);
+                    iprintf("\x1B[4;0H%ld/%ld bytes\n", bytes_read, fi.uncompressed_size);
                     if (fi.uncompressed_size > 0) {
                         char bar[31];
                         bar[30] = 0;
@@ -86,6 +94,11 @@ int unzip_file(std::string zip_path, std::string output_dir) {
             fclose(f);
             printf("Total bytes read: %ld\n", bytes_read);
             status = zip.closeCurrentFile();
+            if (for_each_file) {
+                if (!for_each_file(filePath)) {
+                    return -2;
+                }
+            }
             status = zip.gotoNextFile();
         }
         zip.closeZIP();
