@@ -321,7 +321,7 @@ int main(int argc, char **argv) {
     Menu mainMenu("NoOutro " VER_NUMBER, topConsole, bottomConsole);
 
     // clang-format off
-    mainMenu.addItem(createSubMenu("Nintendo DS",                  "nds",     "nds",     "Nintendo%20-%20Nintendo%20Entertainment%20System%20%28Headered%29/", "Licensed software for the Nintendo DS", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Nintendo DS",                  "nds",     "nds",     "Nintendo%20-%20Nintendo%20DS%20%28Decrypted%29/", "Licensed software for the Nintendo DS", topConsole, bottomConsole));
     mainMenu.addItem(createSubMenu("Nintendo DS (Download Play)",  "nds_dp",  "nds",     "Nintendo%20-%20Nintendo%20DS%20%28Download%20Play%29/", "Licensed software sent over the DS Download Play wireless protocol", topConsole, bottomConsole));
     mainMenu.addItem(createSubMenu("Nintendo DS (Private)",        "nds_p",   "nds",     "Nintendo%20-%20Nintendo%20DS%20%28Decrypted%29%20%28Private%29/", "Unlicensed paid software for the Nintendo DS", topConsole, bottomConsole));
     mainMenu.addItem(createSubMenu("Nintendo DSi",                 "dsi",     "dsiware", "Nintendo%20-%20Nintendo%20DSi%20%28Decrypted%29/", "Licensed software for the Nintendo DSi", topConsole, bottomConsole));
