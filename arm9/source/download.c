@@ -107,6 +107,7 @@ int download(const char *url, const char *path) {
     curl_easy_setopt(hnd, CURLOPT_XFERINFOFUNCTION, handleProgress);
     curl_easy_setopt(hnd, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(hnd, CURLOPT_VERBOSE, (long)verbose);
+    curl_easy_setopt(hnd, CURLOPT_FAILONERROR, 1L);
     if (verbose)
         curl_easy_setopt(hnd, CURLOPT_DEBUGFUNCTION, handleLog);
 
@@ -126,10 +127,16 @@ int download(const char *url, const char *path) {
     consoleClear();
 
     cRes = curl_easy_perform(hnd);
+    long response_code;
+    curl_easy_getinfo(hnd, CURLINFO_RESPONSE_CODE, &response_code);
     curl_easy_cleanup(hnd);
     hnd = NULL;
 
-    if (cRes != CURLE_OK) {
+    if (cRes == CURLE_HTTP_RETURNED_ERROR) {
+        iprintf("Error: Server responded with non-success status code: %ld", response_code);
+        ret = -5;
+        goto cleanup;
+    } else if (cRes != CURLE_OK) {
         iprintf("Error in:\ncurl\n");
         ret = -4;
         goto cleanup;

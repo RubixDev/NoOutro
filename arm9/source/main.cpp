@@ -15,10 +15,13 @@
 #include <stdio.h>
 
 bool verbose = false;
+
 static const std::string BASE_URL = "https://myrient.erista.me/files/No-Intro/";
 static const std::string DATA_DIR = "sd:/no-outro";
 static const std::string ZIP_FILE_PATH = DATA_DIR + "/rom.zip";
 static const std::string ROMS_DIR = "sd:/roms/";
+
+#define GO_BACK "\x1b[33mPress A or B to go back.\x1b[39m\n"
 
 const char *read_file(const char *filename) {
     char *buffer = 0;
@@ -209,19 +212,20 @@ MenuItem createSubMenu(
                                             if (!res) {
                                                 Menu::prompt(
                                                     KEY_A | KEY_B,
-                                                    "\x1b[31mExtraction failed.\n\x1b[33mPress A "
-                                                    "or B to go back.\x1b[39m\n"
+                                                    "\x1b[31mExtraction failed.\n" GO_BACK
                                                 );
                                             } else {
                                                 Menu::prompt(
                                                     KEY_A | KEY_B,
-                                                    "\x1b[32mExtraction successful!\n\x1b[33mPress "
-                                                    "A or B to go back.\x1b[39m\n"
+                                                    "\x1b[32mExtraction successful!\n" GO_BACK
                                                 );
                                             }
                                         } else {
-                                            Menu::printDelay(
-                                                60, "\nDownload Failed\nCode: %d\n", ret
+                                            Menu::prompt(
+                                                KEY_A | KEY_B,
+                                                "\n\x1b[31mDownload Failed with error code "
+                                                "%d\n" GO_BACK,
+                                                ret
                                             );
                                         }
                                     }
