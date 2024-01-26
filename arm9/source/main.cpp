@@ -55,11 +55,12 @@ MenuItem createSubMenu(
     std::string ident,
     std::string dir,
     std::string remoteDir,
+    std::string description,
     PrintConsole *topConsole,
     PrintConsole *bottomConsole,
     std::function<bool(std::string roms_path)> customExtract = nullptr
 ) {
-    return {
+    MenuItem item = {
         title,
         0,
         [topConsole, bottomConsole, title, ident, dir, remoteDir, customExtract](Menu &menu) {
@@ -266,6 +267,9 @@ MenuItem createSubMenu(
             consoleClear();
             subMenu.run();
         }};
+    item.details = title + "\n\nIdentifier: " + ident + "\n\nDownloads to: " + ROMS_DIR + dir +
+                   "/\n\nDescription:\n\n" + description;
+    return item;
 }
 
 bool gbaMultibootExtract(std::string roms_path) {
@@ -314,45 +318,45 @@ int main(int argc, char **argv) {
 
     consoleClear();
 
-    Menu mainMenu("NoOutro " VER_NUMBER);
+    Menu mainMenu("NoOutro " VER_NUMBER, topConsole, bottomConsole);
 
     // clang-format off
-    mainMenu.addItem(createSubMenu("Nintendo DS",                  "nds",     "nds",     "Nintendo%20-%20Nintendo%20Entertainment%20System%20%28Headered%29/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Nintendo DS (Download Play)",  "nds_dp",  "nds",     "Nintendo%20-%20Nintendo%20DS%20%28Download%20Play%29/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Nintendo DS (Private)",        "nds_p",   "nds",     "Nintendo%20-%20Nintendo%20DS%20%28Decrypted%29%20%28Private%29/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Nintendo DSi",                 "dsi",     "dsiware", "Nintendo%20-%20Nintendo%20DSi%20%28Decrypted%29/", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Nintendo DS",                  "nds",     "nds",     "Nintendo%20-%20Nintendo%20Entertainment%20System%20%28Headered%29/", "Licensed software for the Nintendo DS", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Nintendo DS (Download Play)",  "nds_dp",  "nds",     "Nintendo%20-%20Nintendo%20DS%20%28Download%20Play%29/", "Licensed software sent over the DS Download Play wireless protocol", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Nintendo DS (Private)",        "nds_p",   "nds",     "Nintendo%20-%20Nintendo%20DS%20%28Decrypted%29%20%28Private%29/", "Unlicensed paid software for the Nintendo DS", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Nintendo DSi",                 "dsi",     "dsiware", "Nintendo%20-%20Nintendo%20DSi%20%28Decrypted%29/", "Licensed software for the Nintendo DSi", topConsole, bottomConsole));
     // TODO: the two digital collections need extra work, mainly renaming the extracted files
-    // mainMenu.addItem(createSubMenu("Nintendo DSi (Digital)",       "dsi_d",   "dsiware", "Nintendo%20-%20Nintendo%20DSi%20%28Digital%29/", topConsole, bottomConsole));
-    // mainMenu.addItem(createSubMenu("Nintendo DSi (Digital) (CDN)", "dsi_cdn", "dsiware", "Nintendo%20-%20Nintendo%20DSi%20%28Digital%29%20%28CDN%29%20%28Decrypted%29/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Atari 2600",                   "a26",     "a26",     "Atari%20-%202600/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Atari 5200",                   "a52",     "a52",     "Atari%20-%205200/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Atari 7800",                   "a78",     "a78",     "Atari%20-%207800/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("ColecoVision",                 "col",     "col",     "Coleco%20-%20ColecoVision/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Game Boy",                     "gb",      "gb",      "Nintendo%20-%20Game%20Boy/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Game Boy (Private)",           "gb_p",    "gb",      "Nintendo%20-%20Game%20Boy%20%28Private%29/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Game Boy Color",               "gbc",     "gb",      "Nintendo%20-%20Game%20Boy%20Color/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Game Boy Color (Private)",     "gbc_p",   "gb",      "Nintendo%20-%20Game%20Boy%20Color%20%28Private%29/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Game Boy Advance",             "gba",     "gba",     "Nintendo%20-%20Game%20Boy%20Advance/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Game Boy Advance (Multiboot)", "gba_m",   "gba",     "Nintendo%20-%20Game%20Boy%20Advance%20%28Multiboot%29/", topConsole, bottomConsole, gbaMultibootExtract));
-    mainMenu.addItem(createSubMenu("Game Boy Advance (Private)",   "gba_p",   "gba",     "Nintendo%20-%20Game%20Boy%20Advance%20%28Private%29/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Game Boy Advance (Video)",     "gba_v",   "gba",     "Nintendo%20-%20Game%20Boy%20Advance%20%28Video%29/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("NeoGeo Pocket",                "ngp",     "ngp",     "SNK%20-%20NeoGeo%20Pocket/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("NeoGeo Pocket Color",          "ngpc",    "ngp",     "SNK%20-%20NeoGeo%20Pocket%20Color/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("NES",                          "nes",     "nes",     "Nintendo%20-%20Nintendo%20Entertainment%20System%20%28Headered%29/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("NES (Private)",                "nes_p",   "nes",     "Nintendo%20-%20Nintendo%20Entertainment%20System%20%28Headered%29%20%28Private%29/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Sega Game Gear",               "gg",      "gg",      "Sega%20-%20Game%20Gear/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Sega Genesis",                 "gen",     "gen",     "Sega%20-%20Mega%20Drive%20-%20Genesis/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Sega Genesis (Private)",       "gen_p",   "gen",     "Sega%20-%20Mega%20Drive%20-%20Genesis%20%28Private%29/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Sega Master System",           "sms",     "sms",     "Sega%20-%20Master%20System%20-%20Mark%20III/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("Sega SG-1000",                 "sg",      "sg",      "Sega%20-%20SG-1000/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("SNES",                         "snes",    "snes",    "Nintendo%20-%20Super%20Nintendo%20Entertainment%20System/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("SNES (Private)",               "snes_p",  "snes",    "Nintendo%20-%20Super%20Nintendo%20Entertainment%20System%20%28Private%29/", topConsole, bottomConsole));
+    // mainMenu.addItem(createSubMenu("Nintendo DSi (Digital)",       "dsi_d",   "dsiware", "Nintendo%20-%20Nintendo%20DSi%20%28Digital%29/", "", topConsole, bottomConsole));
+    // mainMenu.addItem(createSubMenu("Nintendo DSi (Digital) (CDN)", "dsi_cdn", "dsiware", "Nintendo%20-%20Nintendo%20DSi%20%28Digital%29%20%28CDN%29%20%28Decrypted%29/", "Licensed downloadable software for the Nintendo DSi (DSiWare)", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Atari 2600",                   "a26",     "a26",     "Atari%20-%202600/", "Licensed software for the Atari 2600", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Atari 5200",                   "a52",     "a52",     "Atari%20-%205200/", "Licensed software for the Atari 5200", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Atari 7800",                   "a78",     "a78",     "Atari%20-%207800/", "Licensed software for the Atari 7800", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("ColecoVision",                 "col",     "col",     "Coleco%20-%20ColecoVision/", "Licensed software for the ColecoVision", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Game Boy",                     "gb",      "gb",      "Nintendo%20-%20Game%20Boy/", "Licensed software for the Nintendo Game Boy", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Game Boy (Private)",           "gb_p",    "gb",      "Nintendo%20-%20Game%20Boy%20%28Private%29/", "Unlicensed paid software for the Nintendo Game Boy", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Game Boy Color",               "gbc",     "gb",      "Nintendo%20-%20Game%20Boy%20Color/", "Licensed software for the Nintendo Game Boy Color", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Game Boy Color (Private)",     "gbc_p",   "gb",      "Nintendo%20-%20Game%20Boy%20Color%20%28Private%29/", "Unlicensed paid software for the Nintendo Game Boy Color", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Game Boy Advance",             "gba",     "gba",     "Nintendo%20-%20Game%20Boy%20Advance/", "Licensed software for the Nintendo Game Boy Advance", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Game Boy Advance (Multiboot)", "gba_m",   "gba",     "Nintendo%20-%20Game%20Boy%20Advance%20%28Multiboot%29/", "Licensed software sent over the GBA Multiboot protocol", topConsole, bottomConsole, gbaMultibootExtract));
+    mainMenu.addItem(createSubMenu("Game Boy Advance (Private)",   "gba_p",   "gba",     "Nintendo%20-%20Game%20Boy%20Advance%20%28Private%29/", "Unlicensed paid software for the Nintendo Game Boy Advance", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Game Boy Advance (Video)",     "gba_v",   "gba",     "Nintendo%20-%20Game%20Boy%20Advance%20%28Video%29/", "Licensed videos for the Nintendo Game Boy Advance", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("NeoGeo Pocket",                "ngp",     "ngp",     "SNK%20-%20NeoGeo%20Pocket/", "Licensed software for the NeoGeo Pocket", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("NeoGeo Pocket Color",          "ngpc",    "ngp",     "SNK%20-%20NeoGeo%20Pocket%20Color/", "Licensed software for the NeoGeo Pocket Color", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("NES",                          "nes",     "nes",     "Nintendo%20-%20Nintendo%20Entertainment%20System%20%28Headered%29/", "Licensed software for the Nintendo Entertainment System (a.k.a. Family Computer)", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("NES (Private)",                "nes_p",   "nes",     "Nintendo%20-%20Nintendo%20Entertainment%20System%20%28Headered%29%20%28Private%29/", "Unlicensed paid software for the Nintendo Entertainment System (a.k.a. Family Computer)", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Sega Game Gear",               "gg",      "gg",      "Sega%20-%20Game%20Gear/", "Licensed software for the Sega Game Gear", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Sega Genesis",                 "gen",     "gen",     "Sega%20-%20Mega%20Drive%20-%20Genesis/", "Licensed software for the Sega Genesis (a.k.a. Mega Drive)", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Sega Genesis (Private)",       "gen_p",   "gen",     "Sega%20-%20Mega%20Drive%20-%20Genesis%20%28Private%29/", "Unlicensed software for the Sega Genesis (a.k.a. Mega Drive)", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Sega Master System",           "sms",     "sms",     "Sega%20-%20Master%20System%20-%20Mark%20III/", "Licensed software for the Sega Master System", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Sega SG-1000",                 "sg",      "sg",      "Sega%20-%20SG-1000/", "Licensed software for the Sega SG-100", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("SNES",                         "snes",    "snes",    "Nintendo%20-%20Super%20Nintendo%20Entertainment%20System/", "Licensed software for the Super Nintendo Entertainment System (a.k.a. Super Family Computer)", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("SNES (Private)",               "snes_p",  "snes",    "Nintendo%20-%20Super%20Nintendo%20Entertainment%20System%20%28Private%29/", "Unlicensed paid software for the Super Nintendo Entertainment System (a.k.a. Super Family Computer)", topConsole, bottomConsole));
     // TODO: Sord M5 doesn't have roms in No-Intro
-    // mainMenu.addItem(createSubMenu("Sord M5",                      "m5",      "m5",      "", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("TurboGrafx-16",                "tg16",    "tg16",    "NEC%20-%20PC%20Engine%20-%20TurboGrafx-16/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("TurboGrafx-16 (Private)",      "tg16_p",  "tg16",    "NEC%20-%20PC%20Engine%20-%20TurboGrafx-16%20%28Private%29/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("WonderSwan",                   "ws",      "ws",      "Bandai%20-%20WonderSwan/", topConsole, bottomConsole));
-    mainMenu.addItem(createSubMenu("WonderSwan Color",             "wsc",     "ws",      "Bandai%20-%20WonderSwan%20Color/", topConsole, bottomConsole));
+    // mainMenu.addItem(createSubMenu("Sord M5",                      "m5",      "m5",      "", "Licensed software for the Sord M5", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("TurboGrafx-16",                "tg16",    "tg16",    "NEC%20-%20PC%20Engine%20-%20TurboGrafx-16/", "Licensed software for the TurboGrafx-16 (a.k.a. PC Engine)", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("TurboGrafx-16 (Private)",      "tg16_p",  "tg16",    "NEC%20-%20PC%20Engine%20-%20TurboGrafx-16%20%28Private%29/", "Unlicensed paid software for the TurboGrafx-16 (a.k.a. PC Engine)", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("WonderSwan",                   "ws",      "ws",      "Bandai%20-%20WonderSwan/", "Licensed software for the WonderSwan", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("WonderSwan Color",             "wsc",     "ws",      "Bandai%20-%20WonderSwan%20Color/", "Licensed software for the WonderSwan Color", topConsole, bottomConsole));
 
     mainMenu.addItem({"Exit                     START", KEY_START, [](Menu &menu) {
         menu.exit();
