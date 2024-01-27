@@ -61,7 +61,7 @@ MenuItem createSubMenu(
     std::string description,
     PrintConsole *topConsole,
     PrintConsole *bottomConsole,
-    std::function<bool(std::string roms_path)> customExtract = nullptr
+    std::function<bool(std::string roms_path, std::string orig_filename)> customExtract = nullptr
 ) {
     MenuItem item = {
         title,
@@ -195,7 +195,7 @@ MenuItem createSubMenu(
                             MenuItem item(
                                 title,
                                 0,
-                                [href, roms_path, url, customExtract](Menu &menu) {
+                                [href, roms_path, url, customExtract, title](Menu &menu) {
                                     u16 key = Menu::prompt(
                                         KEY_A | KEY_B,
                                         "Download selected title?\n\n(<A> Yes, <B> No)\n"
@@ -207,7 +207,7 @@ MenuItem createSubMenu(
                                             Menu::print("\nDownload Successful!\n");
                                             bool res =
                                                 customExtract
-                                                    ? customExtract(roms_path)
+                                                    ? customExtract(roms_path, title)
                                                     : unzip_file(ZIP_FILE_PATH, roms_path) == 0;
                                             if (!res) {
                                                 Menu::prompt(
@@ -276,10 +276,14 @@ MenuItem createSubMenu(
     return item;
 }
 
-bool gbaMultibootExtract(std::string roms_path) {
+bool gbaMultibootExtract(std::string roms_path, std::string _orig_filename) {
     return unzip_file(ZIP_FILE_PATH, roms_path, [](std::string file_path) {
                return multibootstrap_patchFile(file_path.c_str());
            }) == 0;
+}
+
+bool dsiwareExtract(std::string roms_path, std::string orig_filename) {
+    return unzip_dsiware(ZIP_FILE_PATH, roms_path, orig_filename) == 0;
 }
 
 int main(int argc, char **argv) {
@@ -329,9 +333,9 @@ int main(int argc, char **argv) {
     mainMenu.addItem(createSubMenu("Nintendo DS (Download Play)",  "nds_dp",  "nds",     "Nintendo%20-%20Nintendo%20DS%20%28Download%20Play%29/", "Licensed software sent over the DS Download Play wireless protocol", topConsole, bottomConsole));
     mainMenu.addItem(createSubMenu("Nintendo DS (Private)",        "nds_p",   "nds",     "Nintendo%20-%20Nintendo%20DS%20%28Decrypted%29%20%28Private%29/", "Unlicensed paid software for the Nintendo DS", topConsole, bottomConsole));
     mainMenu.addItem(createSubMenu("Nintendo DSi",                 "dsi",     "dsiware", "Nintendo%20-%20Nintendo%20DSi%20%28Decrypted%29/", "Licensed software for the Nintendo DSi", topConsole, bottomConsole));
-    // TODO: the two digital collections need extra work, mainly renaming the extracted files
+    // TODO: is there anything in the Digital collection that's not in the Digital CDN collection?
     // mainMenu.addItem(createSubMenu("Nintendo DSi (Digital)",       "dsi_d",   "dsiware", "Nintendo%20-%20Nintendo%20DSi%20%28Digital%29/", "", topConsole, bottomConsole));
-    // mainMenu.addItem(createSubMenu("Nintendo DSi (Digital) (CDN)", "dsi_cdn", "dsiware", "Nintendo%20-%20Nintendo%20DSi%20%28Digital%29%20%28CDN%29%20%28Decrypted%29/", "Licensed downloadable software for the Nintendo DSi (DSiWare)", topConsole, bottomConsole));
+    mainMenu.addItem(createSubMenu("Nintendo DSi (Digital) (CDN)", "dsi_cdn", "dsiware", "Nintendo%20-%20Nintendo%20DSi%20%28Digital%29%20%28CDN%29%20%28Decrypted%29/", "Licensed downloadable software for the Nintendo DSi (DSiWare)", topConsole, bottomConsole, dsiwareExtract));
     mainMenu.addItem(createSubMenu("Atari 2600",                   "a26",     "a26",     "Atari%20-%202600/", "Licensed software for the Atari 2600", topConsole, bottomConsole));
     mainMenu.addItem(createSubMenu("Atari 5200",                   "a52",     "a52",     "Atari%20-%205200/", "Licensed software for the Atari 5200", topConsole, bottomConsole));
     mainMenu.addItem(createSubMenu("Atari 7800",                   "a78",     "a78",     "Atari%20-%207800/", "Licensed software for the Atari 7800", topConsole, bottomConsole));

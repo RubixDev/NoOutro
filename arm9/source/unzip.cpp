@@ -105,3 +105,100 @@ int unzip_file(
     }
     return 0;
 }
+
+// TODO: deduplicate with above function
+int unzip_dsiware(std::string zip_path, std::string output_dir, std::string orig_filename) {
+    // TODO: mkdir -p output_dir
+    int status;
+    uLong bytes_read;
+    uint8_t buf[1 << 19]; // 0.5 MiB
+    unz_file_info fi;
+    char fileName[20];
+
+    status = zip.openZIP(zip_path.c_str(), myOpen, myClose, myRead, mySeek);
+    if (status != UNZ_OK) {
+        printf("Failed to extract file: %d\n", status);
+        return -2;
+    }
+
+    // find content file to extract
+    int max_version = 0;
+    zip.gotoFirstFile();
+    status = UNZ_OK;
+    while (status == UNZ_OK) {
+        status = zip.openCurrentFile();
+        if (status != UNZ_OK) {
+            printf("Failed to extract file: %d\n", status);
+            zip.closeZIP();
+            return -1;
+        }
+        status = zip.getFileInfo(&fi, fileName, sizeof(fileName), NULL, 0, NULL, 0);
+        if (status != UNZ_OK) {
+            printf("Failed to extract file: %d\n", status);
+            zip.closeZIP();
+            return -1;
+        }
+        if (strlen(fileName) == 8) {
+            int version = (int)strtol(fileName, NULL, 16);
+            if (version > max_version) {
+                max_version = version;
+            }
+        }
+        status = zip.closeCurrentFile();
+        status = zip.gotoNextFile();
+    }
+    char content_filename[9];
+    sprintf(content_filename, "%08x", max_version);
+    consoleClear();
+    printf("Extracting file: %s\n", content_filename);
+
+    status = zip.locateFile(content_filename);
+    if (status != UNZ_OK) {
+        printf("Failed to extract file: %d\n", status);
+        zip.closeZIP();
+        return -1;
+    }
+    status = zip.openCurrentFile();
+    if (status != UNZ_OK) {
+        printf("Failed to extract file: %d\n", status);
+        zip.closeZIP();
+        return -1;
+    }
+    status = zip.getFileInfo(&fi, fileName, sizeof(fileName), NULL, 0, NULL, 0);
+    if (status != UNZ_OK) {
+        printf("Failed to extract file: %d\n", status);
+        zip.closeZIP();
+        return -1;
+    }
+    bytes_read = 0;
+    status = 1;
+    std::string filePath =
+        output_dir + "/" + orig_filename.substr(0, orig_filename.length() - 3) + "dsi";
+    printf("Extracting to: %s\n", filePath.c_str());
+    FILE *f = fopen(filePath.c_str(), "wb");
+    while (status > 0) {
+        status = zip.readCurrentFile(buf, sizeof(buf));
+        if (status >= 0) {
+            bytes_read += status;
+            fwrite(buf, status, 1, f);
+
+            iprintf("\x1B[4;0H%ld/%ld bytes\n", bytes_read, fi.uncompressed_size);
+            if (fi.uncompressed_size > 0) {
+                char bar[31];
+                bar[30] = 0;
+                for (unsigned int i = 0; i < 30; i++)
+                    bar[i] = (bytes_read * 30 / (fi.uncompressed_size | 1) > i) ? '=' : ' ';
+                iprintf("[%s]\n", bar);
+            }
+        } else {
+            printf("Failed to extract file: %d\n", status);
+            zip.closeZIP();
+            return -1;
+        }
+    }
+    fclose(f);
+    printf("Total bytes read: %ld\n", bytes_read);
+
+    zip.closeZIP();
+    return 0;
+}
