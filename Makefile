@@ -30,6 +30,8 @@ include $(DEVKITARM)/ds_rules
 
 .PHONY: checkarm7 checkarm9 clean
 
+ARM9_LIBS := ./libs/lib/liblexbor.a ./libs/lib/libunzip.a
+
 #---------------------------------------------------------------------------------
 # main targets
 #---------------------------------------------------------------------------------
@@ -40,7 +42,7 @@ checkarm7:
 	$(MAKE) -C arm7
 
 #---------------------------------------------------------------------------------
-checkarm9:
+checkarm9: $(ARM9_LIBS)
 	$(MAKE) -C arm9
 
 #---------------------------------------------------------------------------------
@@ -55,13 +57,13 @@ arm7/$(TARGET).elf:
 	$(MAKE) -C arm7
 
 #---------------------------------------------------------------------------------
-arm9/$(TARGET).elf: ./libs/lib/liblexbor.a ./libs/lib/libunzip.a
+arm9/$(TARGET).elf: $(ARM9_LIBS)
 	$(MAKE) -C arm9
 
 ./libs/lib/liblexbor.a: ./lexbor/LICENSE
 	mkdir -p ./lexbor/build
 	arm-none-eabi-cmake -S ./lexbor/ -B ./lexbor/build -DLEXBOR_BUILD_SHARED=OFF
-	make -C ./lexbor/build
+	$(MAKE) -C ./lexbor/build
 	cp ./lexbor/build/liblexbor_static.a ./libs/lib/liblexbor.a
 	rm -rf ./lexbor/build
 
@@ -84,6 +86,6 @@ clean:
 	$(MAKE) -C arm7 clean
 	rm -f $(TARGET).nds
 
-cppcheck:
+cppcheck: $(ARM9_LIBS)
 	$(MAKE) -C arm7 cppcheck
 	$(MAKE) -C arm9 cppcheck

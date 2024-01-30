@@ -25,7 +25,13 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: recursive
+          # we need to have the full history and tags for `git describe` to work
+          fetch-depth: 0
+
+      # idk why this is needed, the checkout aciton already does this
+      - name: Add git safe directory
+        run: git config --global --add safe.directory "$PWD"
 
       - name: Build NoOutro
         run: |
